@@ -17,12 +17,12 @@ const data = {
 
     { id: 'asset1', group: 5, workload: 'vm' },
     { id: 'asset2', group: 5, workload: 'fs'},
-    { id: 'asset3', group: 5 },
-    { id: 'asset4', group: 5 },
-    { id: 'asset5', group: 5 },
-    { id: 'asset6', group: 5 },
-    { id: 'asset7', group: 5 },
-    { id: 'new asset', group: 5 },
+    { id: 'asset3', group: 5,workload: 'vm'  },
+    { id: 'asset4', group: 5,workload: 'vm'  },
+    { id: 'asset5', group: 5, workload: 'oracle'  },
+    { id: 'asset6', group: 5,workload: 'sql' },
+    { id: 'asset7', group: 5,workload: 'aix'  },
+    { id: 'new asset', group: 5, workload: 'vm' },
   ],
   links: [
     { source: 'policy1', target: 'asset3', value: 8, },
@@ -93,18 +93,19 @@ const node = svg
   .join('circle')
   .attr('r', (d) => d.group*5)
   .attr('fill', (d) => color(d.workload));
-
-  const text = svg
-  .append('g')
-  .attr('stroke', '#fff')
-  .attr('stroke-width', 1.5)
-  .selectAll()
-  .data(nodes)
-  .join('text')
   
+  node.append('title').text((d) => `${d.id}\n${d.workload || ''}`);
 
-node.append('title').text((d) => d.id);
-text.append('span').text((d) => d.id);
+
+var text = svg.append("g")
+    .attr("class", "labels")
+  .selectAll("text")
+    .data(nodes)
+  .enter().append("text")
+    .attr("dx", 12)
+    .attr("dy", ".35em")
+    .text((d) => `${d.id}`);
+
 
 
 // Add a drag behavior.
@@ -121,6 +122,8 @@ function ticked() {
     .attr('y2', (d) => d.target.y);
 
   node.attr('cx', (d) => d.x).attr('cy', (d) => d.y);
+  text.attr('dx', (d) => d.x).attr('dy', (d) => d.y);
+
 }
 
 // Reheat the simulation when drag starts, and fix the subject position.
